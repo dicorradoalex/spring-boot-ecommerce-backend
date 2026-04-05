@@ -21,10 +21,10 @@ public class UserEntity {
     @EqualsAndHashCode.Include // Genera Equals e HashCode basandosi su questo campo
     private UUID id;
 
-    String name;
-    String surname;
-    String address;
-    String city;
-    String country;
+    private String name;
+    private String surname;
+    private String address;
+    private String city;
+    private String country;
 
 }
