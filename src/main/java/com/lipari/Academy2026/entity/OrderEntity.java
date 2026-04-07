@@ -37,4 +37,8 @@ public class OrderEntity {
     @Column(name = "order_time", nullable = false)
     LocalDateTime orderTime;
 
+    @OneToMany(mappedBy = "orderEntity")
+    @ToString.Exclude
+    private List<OrderEntryEntity> entries;
+
 }

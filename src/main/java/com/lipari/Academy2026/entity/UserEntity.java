@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -26,5 +27,9 @@ public class UserEntity {
     private String address;
     private String city;
     private String country;
+
+    @OneToMany(mappedBy = "user")
+    private List<OrderEntity> orders;
+
 
 }
