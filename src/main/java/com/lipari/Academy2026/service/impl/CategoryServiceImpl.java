@@ -1,16 +1,11 @@
 package com.lipari.Academy2026.service.impl;
 
 import com.lipari.Academy2026.dto.CategoryDTO;
-import com.lipari.Academy2026.dto.ProductDTO;
 import com.lipari.Academy2026.entity.CategoryEntity;
-import com.lipari.Academy2026.entity.ProductEntity;
 import com.lipari.Academy2026.exception.ResourceNotFoundException;
 import com.lipari.Academy2026.mapper.CategoryMapper;
-import com.lipari.Academy2026.mapper.ProductMapper;
 import com.lipari.Academy2026.repository.CategoryRepository;
-import com.lipari.Academy2026.repository.ProductRepository;
 import com.lipari.Academy2026.service.CategoryService;
-import com.lipari.Academy2026.service.ProductService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

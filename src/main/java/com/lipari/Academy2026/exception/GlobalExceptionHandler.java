@@ -30,4 +30,16 @@ public class GlobalExceptionHandler {
         // Restituisci l'oggetto (che diventerà JSON) e specifica lo stato HTTP 404
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
+
+    // Intercetta specificatamente le AlreadyExistsException
+    @ExceptionHandler(AlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDTO> handleAlreadyExistsException(AlreadyExistsException ex) {
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                HttpStatus.CONFLICT.value(), // Estrai il codice dell'errore (409)
+                ex.getMessage(), // Estrai il messaggio scritto nel Service
+                LocalDateTime.now() // Cattura l'orario
+        );
+        // Restituisci l'oggetto (che diventerà JSON) e specifica lo stato HTTP 409
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
 }
