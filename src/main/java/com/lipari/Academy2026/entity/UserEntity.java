@@ -7,7 +7,7 @@ import lombok.*;
 import java.util.List;
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true) // Equals e HashCode su campi indicati
@@ -16,15 +16,29 @@ import java.util.List;
 @Builder
 public class UserEntity {
 
-    @Id // indica la chiave primaria
-    @GeneratedValue(strategy = GenerationType.UUID) // Genera ID univoco
-    @EqualsAndHashCode.Include // Genera Equals e HashCode basandosi su questo campo
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @EqualsAndHashCode.Include
     private UUID id;
 
+    // "nullable = false" non accetta valori nulli
+    @Column(nullable = false, length = 100)
     private String name;
+
+    @Column(nullable = false, length = 100)
     private String surname;
+
+    // "unique = true" garantisce l'assenza di duplicati
+    @Column(unique = true, nullable = false, length = 150)
+    private String email;
+
+    @Column(length = 200)
     private String address;
+
+    @Column(length = 100)
     private String city;
+
+    @Column(length = 50)
     private String country;
 
     @OneToMany(mappedBy = "user")
