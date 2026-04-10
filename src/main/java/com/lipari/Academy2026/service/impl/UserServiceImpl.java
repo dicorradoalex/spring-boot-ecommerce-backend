@@ -7,9 +7,12 @@ import com.lipari.Academy2026.exception.ResourceNotFoundException;
 import com.lipari.Academy2026.mapper.UserMapper;
 import com.lipari.Academy2026.repository.UserRepository;
 import com.lipari.Academy2026.service.UserService;
+import org.mapstruct.MappingTarget;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,7 +34,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDTO createUser(UserDTO userDTO) {
-        // Controlla se l'email è già nel db
+        // Controlla nel db se esiste già un utente con la stessa email
         if (userRepository.existsByEmail(userDTO.email()))
             throw new AlreadyExistsException("L'email " + userDTO.email() + " è già registrata.");
         // Mappa e salva
@@ -50,17 +53,33 @@ public class UserServiceImpl implements UserService {
             throw new ResourceNotFoundException("Utente con ID: " + id + " non trovato.");
     }
 
+    @Transactional
     public void deleteUser(UUID id) {
-        // TODO
-
+        Optional<UserEntity> userOptional = this.userRepository.findById(id);
+        if(userOptional.isPresent())
+            this.userRepository.deleteById(id);
+        else throw new ResourceNotFoundException("Utente con ID: " + id + " non trovato.");
     }
 
+    @Override
+    @Transactional
     public UserDTO updateUser(UserDTO userDTO) {
+        Optional<UserEntity> userOpt = this.userRepository.findById(userDTO.id());
+        if(userOpt.isPresent()) {
+            UserEntity userToUpdate = userOpt.get();
+            this.userMapper.updateToDto(userDTO, userToUpdate);
+            UserDTO savedUser = this.userMapper.toDto(this.userRepository.save(userToUpdate));
+            return savedUser;
+        } else {
+            throw new ResourceNotFoundException("Utente con ID: " + userDTO.id() + "non trovato.");
+        }
 
     }
 
+    @Override
     public List<UserDTO> getAllUsers() {
-        // TODO
+        List<UserEntity> usersList = this.userRepository.findAll();
+        return this.userMapper.toDtoList(usersList);
     }
 
 

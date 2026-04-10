@@ -121,10 +121,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductDTO> getAllProducts() {
         // Recupero le entità dal db
-        List<ProductEntity> peList = this.productRepository.findAll();
+        List<ProductEntity> productsList = this.productRepository.findAll();
 
         // Trasformo da Entity a DTO e restituisco
-        return this.productMapper.toDtoList(peList);
+        return this.productMapper.toDtoList(productsList);
     }
 
 }
