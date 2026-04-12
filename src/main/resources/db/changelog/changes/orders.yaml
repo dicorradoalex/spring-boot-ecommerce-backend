@@ -30,3 +30,17 @@ databaseChangeLog:
                   type: DATETIME
                   constraints:
                     nullable: false
+
+
+  - changeSet:
+      id: 20260412162924-add-total-to-orders
+      author: dicorradoalex
+      changes:
+        - addColumn:
+            tableName: orders
+            columns:
+              - column:
+                  name: total
+                  type: DECIMAL(10, 2)
+                  constraints:
+                    nullable: false
