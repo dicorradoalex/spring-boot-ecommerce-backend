@@ -11,11 +11,12 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
+    @Mapping(target = "orders", ignore = true)
     UserDTO toDto(UserEntity entity);
     UserEntity toEntity(UserDTO dto);
     List<UserDTO> toDtoList(List<UserEntity> entityList);
 
     @Mapping(target = "id", ignore = true)
-    void updateToDto(UserDTO dto, @MappingTarget UserEntity entity);
+    void updateEntityFromDto(UserDTO dto, @MappingTarget UserEntity entity);
 
 }
