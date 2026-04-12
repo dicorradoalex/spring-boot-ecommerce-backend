@@ -40,7 +40,7 @@ public class UserEntity {
     @Column(length = 50)
     private String country;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<OrderEntity> orders;
 

@@ -52,6 +52,7 @@ public class UserServiceImpl implements UserService {
             throw new ResourceNotFoundException("Utente con ID: " + id + " non trovato.");
     }
 
+    @Override
     @Transactional
     public void deleteUser(UUID id) {
         Optional<UserEntity> userOptional = this.userRepository.findById(id);
@@ -66,7 +67,7 @@ public class UserServiceImpl implements UserService {
         Optional<UserEntity> userOpt = this.userRepository.findById(userDTO.id());
         if(userOpt.isPresent()) {
             UserEntity userToUpdate = userOpt.get();
-            this.userMapper.updateToDto(userDTO, userToUpdate);
+            this.userMapper.updateEntityFromDto(userDTO, userToUpdate);
             UserDTO savedUser = this.userMapper.toDto(this.userRepository.save(userToUpdate));
             return savedUser;
         } else {
