@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.UUID;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -78,6 +79,27 @@ public class OrderServiceImpl implements OrderService {
         this.orderRepository.save(newOrder);
         OrderResponseDTO orderCreated = this.orderMapper.toDto(newOrder);
         return orderCreated;
+    }
+
+    @Override
+    @Transactional
+    public OrderResponseDTO updateOrderStatus(UUID orderId, OrderStatus newStatus) {
+        // Cerco l'ordine nel DB
+        Optional<OrderEntity> orderOptional = this.orderRepository.findById(orderId);
+        
+        // Se non lo trovo lancio eccezione
+        if (!orderOptional.isPresent())
+            throw new ResourceNotFoundException("Ordine con ID: " + orderId + " non trovato");
+
+        // Se lo trovo lo estraggo e aggiorno lo stato
+        OrderEntity order = orderOptional.get();
+        order.setStatus(newStatus);
+
+        // Salvo l'entità aggiornata
+        this.orderRepository.save(order);
+
+        // Converto in DTO e restituisco
+        return this.orderMapper.toDto(order);
     }
 }
 
