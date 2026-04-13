@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -100,6 +101,21 @@ public class OrderServiceImpl implements OrderService {
 
         // Converto in DTO e restituisco
         return this.orderMapper.toDto(order);
+    }
+
+    @Override
+    public List<OrderResponseDTO> getOrdersByUser(UUID userId) {
+        // Verifico se l'utente esiste
+        Optional<UserEntity> userOptional = this.userRepository.findById(userId);
+
+        if (!userOptional.isPresent())
+            throw new ResourceNotFoundException("Utente con ID: " + userId + " non trovato");
+
+        // Recupero la lista di entità dal repository
+        List<OrderEntity> ordersList = this.orderRepository.findByUser_Id(userId);
+
+        // Converto la lista di entità in lista di DTO e restituisco
+        return this.orderMapper.toDtoList(ordersList);
     }
 }
 
