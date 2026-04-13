@@ -8,20 +8,9 @@ import java.util.UUID;
 
 public record OrderEntryResponseDTO(
         UUID id,
-
-        @NotNull(message = "Il prodotto è obbligatorio")
         ProductDTO product,
-
-        @NotNull(message = "La quantità è obbligatoria")
-        @Positive(message = "La quantità deve essere maggiore di zero")
         Integer quantity,
-
-        @NotNull(message = "Il prezzo è obbligatorio")
-        @Positive(message = "Il prezzo deve essere maggiore di zero")
         BigDecimal price,
-
-        @NotNull
-        @Positive
         BigDecimal total
 ) {
 }
