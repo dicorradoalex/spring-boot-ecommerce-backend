@@ -1,6 +1,6 @@
 package com.lipari.Academy2026.controller;
 
-import com.lipari.Academy2026.dto.UserDTO;
+import com.lipari.Academy2026.dto.UserResponseDTO;
 import com.lipari.Academy2026.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,32 +22,32 @@ public class UserController {
     // Metodi CRUD
 
     @PostMapping("/new")
-    ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO userDTO) {
-        UserDTO createdUser = this.userService.createUser(userDTO);
+    ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserResponseDTO userResponseDTO) {
+        UserResponseDTO createdUser = this.userService.createUser(userResponseDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<UserDTO> getUser(@PathVariable UUID id) {
-        UserDTO foundUser = this.userService.getUser(id);
+    ResponseEntity<UserResponseDTO> getUser(@PathVariable UUID id) {
+        UserResponseDTO foundUser = this.userService.getUser(id);
         return ResponseEntity.ok(foundUser);
     }
 
     @PutMapping("/update")
-    ResponseEntity<UserDTO> updateUser(@Valid @RequestBody UserDTO userDTO) {
-        UserDTO updatedUser = this.userService.updateUser(userDTO);
+    ResponseEntity<UserResponseDTO> updateUser(@Valid @RequestBody UserResponseDTO userResponseDTO) {
+        UserResponseDTO updatedUser = this.userService.updateUser(userResponseDTO);
         return ResponseEntity.ok(updatedUser);
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<UserDTO> deleteUser(@PathVariable UUID id) {
+    ResponseEntity<UserResponseDTO> deleteUser(@PathVariable UUID id) {
         this.userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/all")
-    ResponseEntity<List<UserDTO>> getAllUsers() {
-        List<UserDTO> usersList = this.userService.getAllUsers();
+    ResponseEntity<List<UserResponseDTO>> getAllUsers() {
+        List<UserResponseDTO> usersList = this.userService.getAllUsers();
         return ResponseEntity.ok(usersList);
     }
 }

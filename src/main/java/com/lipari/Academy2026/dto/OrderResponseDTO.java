@@ -9,7 +9,7 @@ import java.util.List;
 
 public record OrderResponseDTO(
         UUID id,
-        UserDTO user,
+        UserResponseDTO user,
         OrderStatus status,
         LocalDateTime orderTime,
         List<OrderEntryResponseDTO> entries,

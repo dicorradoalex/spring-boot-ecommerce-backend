@@ -1,6 +1,6 @@
 package com.lipari.Academy2026.service.impl;
 
-import com.lipari.Academy2026.dto.UserDTO;
+import com.lipari.Academy2026.dto.UserResponseDTO;
 import com.lipari.Academy2026.entity.UserEntity;
 import com.lipari.Academy2026.exception.AlreadyExistsException;
 import com.lipari.Academy2026.exception.ResourceNotFoundException;
@@ -32,19 +32,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDTO createUser(UserDTO userDTO) {
+    public UserResponseDTO createUser(UserResponseDTO userResponseDTO) {
         // Controlla nel db se esiste già un utente con la stessa email
-        if (userRepository.existsByEmail(userDTO.email()))
-            throw new AlreadyExistsException("L'email " + userDTO.email() + " è già registrata.");
+        if (userRepository.existsByEmail(userResponseDTO.email()))
+            throw new AlreadyExistsException("L'email " + userResponseDTO.email() + " è già registrata.");
         // Mappa e salva
-        UserEntity user = userMapper.toEntity(userDTO);
+        UserEntity user = userMapper.toEntity(userResponseDTO);
         UserEntity savedUser = userRepository.save(user);
         // Restituisci il DTO al Controller
         return userMapper.toDto(savedUser);
     }
 
     @Override
-    public UserDTO getUser(UUID id) {
+    public UserResponseDTO getUser(UUID id) {
         Optional<UserEntity> userOptional = this.userRepository.findById(id);
         if(userOptional.isPresent())
             return this.userMapper.toDto(userOptional.get());
@@ -63,21 +63,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDTO updateUser(UserDTO userDTO) {
-        Optional<UserEntity> userOpt = this.userRepository.findById(userDTO.id());
+    public UserResponseDTO updateUser(UserResponseDTO userResponseDTO) {
+        Optional<UserEntity> userOpt = this.userRepository.findById(userResponseDTO.id());
         if(userOpt.isPresent()) {
             UserEntity userToUpdate = userOpt.get();
-            this.userMapper.updateEntityFromDto(userDTO, userToUpdate);
-            UserDTO savedUser = this.userMapper.toDto(this.userRepository.save(userToUpdate));
+            this.userMapper.updateEntityFromDto(userResponseDTO, userToUpdate);
+            UserResponseDTO savedUser = this.userMapper.toDto(this.userRepository.save(userToUpdate));
             return savedUser;
         } else {
-            throw new ResourceNotFoundException("Utente con ID: " + userDTO.id() + "non trovato.");
+            throw new ResourceNotFoundException("Utente con ID: " + userResponseDTO.id() + "non trovato.");
         }
 
     }
 
     @Override
-    public List<UserDTO> getAllUsers() {
+    public List<UserResponseDTO> getAllUsers() {
         List<UserEntity> usersList = this.userRepository.findAll();
         return this.userMapper.toDtoList(usersList);
     }

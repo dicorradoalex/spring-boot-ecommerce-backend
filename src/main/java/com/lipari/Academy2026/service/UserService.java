@@ -1,6 +1,6 @@
 package com.lipari.Academy2026.service;
 
-import com.lipari.Academy2026.dto.UserDTO;
+import com.lipari.Academy2026.dto.UserResponseDTO;
 
 
 import java.util.List;
@@ -8,13 +8,13 @@ import java.util.UUID;
 
 public interface UserService {
 
-    public UserDTO createUser(UserDTO userDTO);
+    public UserResponseDTO createUser(UserResponseDTO userResponseDTO);
 
-    public UserDTO getUser(UUID id);
+    public UserResponseDTO getUser(UUID id);
 
     public void deleteUser(UUID id);
 
-    public UserDTO updateUser(UserDTO userDTO);
+    public UserResponseDTO updateUser(UserResponseDTO userResponseDTO);
 
-    public List<UserDTO> getAllUsers();
+    public List<UserResponseDTO> getAllUsers();
 }
