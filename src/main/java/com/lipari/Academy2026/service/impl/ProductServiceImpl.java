@@ -1,12 +1,14 @@
 package com.lipari.Academy2026.service.impl;
 
 import com.lipari.Academy2026.dto.ProductDTO;
+import com.lipari.Academy2026.entity.CategoryEntity;
 import com.lipari.Academy2026.entity.ProductEntity;
 import com.lipari.Academy2026.exception.ResourceNotFoundException;
 import com.lipari.Academy2026.mapper.ProductMapper;
 import com.lipari.Academy2026.repository.CategoryRepository;
 import com.lipari.Academy2026.repository.ProductRepository;
 import com.lipari.Academy2026.service.ProductService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,91 +17,93 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true) // Imposta tutto il service come sola lettura di default
 public class ProductServiceImpl implements ProductService {
 
 
-    // Componenti utilizzati dal Service -> final per constructor injection
+    // Dipendenze
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final CategoryRepository categoryRepository;
-
-    // Constructor Injection
-    public ProductServiceImpl(ProductRepository productRepository,
-                              ProductMapper productMapper,
-                              CategoryRepository categoryRepository) {
-        this.productRepository = productRepository;
-        this.productMapper = productMapper;
-        this.categoryRepository = categoryRepository;
-    }
 
     @Transactional
     @Override
     public ProductDTO createProduct(ProductDTO productDTO) {
         // DTO -> Entity
         ProductEntity product = this.productMapper.toEntity(productDTO);
+
         // Estraggo l'ID della categoria dal DTO
-        UUID id_category = productDTO.category().id();
-        if(this.categoryRepository.findById(id_category).isPresent()) {
-            // Salvo la nuova entity nel db
-            product = this.productRepository.save(product);
-            // Restituisco ciò che ho salvato
-            return this.productMapper.toDto(product);
-        }
-        else {
-            throw new ResourceNotFoundException("La categoria con ID " + id_category + " non è stata trovata.");
-        }
+        UUID categoryId = productDTO.category().id();
+
+        // Cerco la categoria nel database
+        Optional<CategoryEntity> CategoryOptional = this.categoryRepository.findById(categoryId);
+        if(!CategoryOptional.isPresent())
+            throw new ResourceNotFoundException("La categoria con ID " + categoryId + " non è stata trovata.");
+
+        // Assegno la categoria trovata nel prodotto
+        product.setCategory(CategoryOptional.get());
+
+        // Salvo e restituisco
+        product = this.productRepository.save(product);
+        return this.productMapper.toDto(product);
     }
 
     @Override
     public ProductDTO getProduct(UUID id) {
-        // Chiedo al repository di trovare l'entità
+        // Recupera il prodotto dal database
         Optional<ProductEntity> productOptional = this.productRepository.findById(id);
-        // Se presente
-        if(productOptional.isPresent()) {
-            // Entity -> DTO e restituisco al Controller
-            return this.productMapper.toDto(productOptional.get());
-        } else {
-            // Se qualcosa non va lancia eccezione
+        if(!productOptional.isPresent())
             throw new ResourceNotFoundException("Prodotto con ID " + id + " non trovato");
-        }
 
+        // Restituisci il prodotto trovato
+        return this.productMapper.toDto(productOptional.get());
     }
 
     @Transactional
     @Override
     public void deleteProduct(UUID id) {
-        // Chiedi al Repository di recuperare il prodotto
+        // Recupera il prodotto dal database
         Optional<ProductEntity> productOptional = this.productRepository.findById(id);
-        // Se lo trovo
-        if(productOptional.isPresent()) {
-            // Cancello l'entità dal db
-            this.productRepository.delete(productOptional.get());
-        } else {
-            // Se qualcosa non va lancia eccezione
+        if(!productOptional.isPresent())
             throw new ResourceNotFoundException("Prodotto con ID " + id + " non trovato");
-        }
+
+        // Cancella
+        this.productRepository.delete(productOptional.get());
     }
 
     @Transactional
     @Override
     public ProductDTO updateProduct(ProductDTO productDTO) {
-        // Chiedi al repository di cercare il DTO nel db
+
+        // Cerco il prodotto nel database
         Optional<ProductEntity> productOptional = this.productRepository.findById(productDTO.id());
-        // Se presente
-        if(productOptional.isPresent()) {
-            // Estrai dall'Optional l'entità
-            ProductEntity productToUpdate = productOptional.get();
-            // Aggiorna l'entità utilizzando come valori quelli del DTO ricevuto come argomento
-            this.productMapper.updateEntityFromDto(productDTO, productToUpdate);
-            // Salvo l'entità aggiornata
-            ProductEntity savedProduct = this.productRepository.save(productToUpdate);
-            // Converto l'oggetto salvato in DTO e lo restituisco al Controller
-            return this.productMapper.toDto(savedProduct);
-        }
-        else {
+        if (!productOptional.isPresent())
             throw new ResourceNotFoundException("Prodotto con ID " + productDTO.id() + " non trovato");
+
+        // Estraggo il prodotto da aggiornare che ho trovato
+        ProductEntity productToUpdate = productOptional.get();
+
+        // Gestione categoria
+        UUID actualCategoryId = productToUpdate.getCategory().getId();
+        UUID newCategoryId = productDTO.category().id();
+
+        // Se le categorie sono diverse
+        if (!actualCategoryId.equals(newCategoryId)) {
+            // Cerco la nuova categoria nel database
+            Optional<CategoryEntity> newCategoryOptional = this.categoryRepository.findById(newCategoryId);
+            if (!newCategoryOptional.isPresent())
+                throw new ResourceNotFoundException("Categoria con ID: " + newCategoryId + " non trovata.");
+            // E la imposto come categoria del prodotto
+            productToUpdate.setCategory(newCategoryOptional.get());
         }
+
+        // Aggiorno gli altri campi dal DTO
+        this.productMapper.updateEntityFromDto(productDTO, productToUpdate);
+
+        // Salvo e Restituisco
+        ProductEntity savedProduct = this.productRepository.save(productToUpdate);
+        return this.productMapper.toDto(savedProduct);
     }
 
     @Override
@@ -107,7 +111,7 @@ public class ProductServiceImpl implements ProductService {
         // Recupero le entità dal db
         List<ProductEntity> productsList = this.productRepository.findAll();
 
-        // Trasformo da Entity a DTO e restituisco
+        // Entity -> DTO e restituisco
         return this.productMapper.toDtoList(productsList);
     }
 
