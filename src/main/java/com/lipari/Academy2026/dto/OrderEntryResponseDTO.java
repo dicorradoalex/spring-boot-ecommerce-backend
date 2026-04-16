@@ -1,8 +1,5 @@
 package com.lipari.Academy2026.dto;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -20,14 +17,6 @@ public record OrderEntryResponseDTO(
 
     - record
       Classe immutabile per trasportare i dati della singola riga di un ordine.
-
-    Annotazioni Validation
-    - @Positive
-      Impedisce l'inserimento di valori negativi o zero.
-
-    - @NotNull
-      Controlla solo che l'oggetto non sia null.
-      Accetta stringhe vuote "" o spazi " ". Si usa per numeri e oggetti.
 
     OMISSIONE DI OrderResponseDTO order
 
