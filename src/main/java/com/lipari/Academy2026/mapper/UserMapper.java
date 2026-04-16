@@ -4,6 +4,7 @@ import com.lipari.Academy2026.dto.UserRegistrationRequestDTO;
 import com.lipari.Academy2026.dto.UserResponseDTO;
 import com.lipari.Academy2026.entity.UserEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
@@ -18,4 +19,6 @@ public interface UserMapper {
 
     // Da Lista di entity a lista di DTO
     List<UserResponseDTO> toDtoList(List<UserEntity> entities);
+
+    void updateEntityFromDto(UserResponseDTO dto, @MappingTarget UserEntity entity);
 }

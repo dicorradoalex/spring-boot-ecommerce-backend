@@ -1,13 +1,16 @@
 package com.lipari.Academy2026.service.impl;
 
+import com.lipari.Academy2026.dto.UserRegistrationRequestDTO;
 import com.lipari.Academy2026.dto.UserResponseDTO;
 import com.lipari.Academy2026.entity.UserEntity;
+import com.lipari.Academy2026.enums.UserRole;
 import com.lipari.Academy2026.exception.AlreadyExistsException;
 import com.lipari.Academy2026.exception.ResourceNotFoundException;
 import com.lipari.Academy2026.mapper.UserMapper;
 import com.lipari.Academy2026.repository.UserRepository;
 import com.lipari.Academy2026.service.UserService;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,30 +20,39 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor // Constructor Injection con Lombok
-@Transactional(readOnly = true) // Imposta tutto il service come sola lettura di default
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
     // Dipendenze -> final per Constructor Injection
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-
-    // Costruttore "invisibile" Generato da Lombok -> Constructor Injection
-
-    // Metodi CRUD: recupera Entity dal Repository e restituisci DTO al Controller
-    // Metodi CRUD: ricevi DTO dal Controller e salva nel DB
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
-    public UserResponseDTO createUser(UserResponseDTO userResponseDTO) {
-        // Controlla nel db se esiste già un utente con la stessa email
-        if (userRepository.existsByEmail(userResponseDTO.email()))
-            throw new AlreadyExistsException("L'email " + userResponseDTO.email() + " è già registrata.");
-        // Mappa e salva
-        UserEntity user = userMapper.toEntity(userResponseDTO);
-        UserEntity savedUser = userRepository.save(user);
-        // Restituisci il DTO al Controller
-        return userMapper.toDto(savedUser);
+    public UserResponseDTO registerUser(UserRegistrationRequestDTO registrationDTO) {
+
+        // Controllo duplicati
+        if (this.userRepository.existsByEmail(registrationDTO.email())) {
+            throw new AlreadyExistsException(
+                    "Email già registrata: " + registrationDTO.email()
+            );
+        }
+
+        // Mappatura DTO -> Entity
+        UserEntity user = this.userMapper.toEntity(registrationDTO);
+
+        // Hashing della password (con BCrypt)
+        String encodedPassword = this.passwordEncoder.encode(registrationDTO.password());
+        user.setPassword(encodedPassword);
+
+        // Assegnazione ruolo di default
+        user.setRole(UserRole.USER);
+
+        // Salvataggio e risposta
+        user = this.userRepository.save(user);
+        return this.userMapper.toDto(user);
     }
 
     @Override
@@ -96,6 +108,11 @@ public class UserServiceImpl implements UserService {
       Abilita la Constructor Injection per le dipendenze (Repository, Mapper).
       Garantisce che il Service sia immutabile e pronto all'uso.
 
+    Spring Security
+
+    - passwordEncoder.encode
+      Questo metodo prende la password "in chiaro" e restituisce
+      una stringa di circa 60 caratteri (l'hash)
 
 
       Gestione delle Transazioni (@Transactional)
