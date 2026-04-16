@@ -1,19 +1,10 @@
 package com.lipari.Academy2026.dto;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-import java.util.UUID;
-import java.util.List;
-
-public record UserDTO(
-        UUID id,
-
-        @NotBlank
-        @Email(message = "Formato email non valido")
-        String email,
+public record UserRegistrationRequestDTO(
 
         @NotBlank(message = "Il nome è obbligatorio")
         String name,
@@ -21,21 +12,19 @@ public record UserDTO(
         @NotBlank(message = "Il cognome è obbligatorio")
         String surname,
 
-        @NotBlank(message = "L'indirizzo è obbligatorio")
-        @Size(max = 200)
+        @Email(message = "l'email è obbligatoria")
+        String email,
+
+        @NotBlank(message = "La password è obbligatoria")
+        @Size(min = 8, message = "La password deve contenere almeno 8 caratteri")
+        String password,
+
         String address,
-
-        @NotBlank(message = "La città è obbligatoria")
-        @Size(max = 100)
         String city,
+        String country
+) {}
 
-        @NotBlank(message = "La nazione è obbligatoria")
-        @Size(max = 50)
-        String country,
 
-        @Valid
-        List<OrderResponseDTO> orders) {
-}
 
 /*
     NOTE DIDATTICHE

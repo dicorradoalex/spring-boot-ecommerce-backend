@@ -1,9 +1,9 @@
 package com.lipari.Academy2026.mapper;
 
-import com.lipari.Academy2026.dto.UserDTO;
+import com.lipari.Academy2026.dto.UserRegistrationRequestDTO;
+import com.lipari.Academy2026.dto.UserResponseDTO;
 import com.lipari.Academy2026.entity.UserEntity;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 import java.util.List;
@@ -11,12 +11,14 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
-    @Mapping(target = "orders", ignore = true)
-    UserDTO toDto(UserEntity entity);
-    UserEntity toEntity(UserDTO dto);
-    List<UserDTO> toDtoList(List<UserEntity> entityList);
+    // Da richiesta di registrazione a Entity (per salvare nel DB)
+    UserEntity toEntity(UserRegistrationRequestDTO registrationDTO);
 
-    @Mapping(target = "id", ignore = true)
-    void updateEntityFromDto(UserDTO dto, @MappingTarget UserEntity entity);
+    // Da Entity a risposta (per inviare al client senza password)
+    UserResponseDTO toDto(UserEntity entity);
 
+    // Da Lista di entity a lista di DTO
+    List<UserResponseDTO> toDtoList(List<UserEntity> entities);
+
+    void updateEntityFromDto(UserResponseDTO dto, @MappingTarget UserEntity entity);
 }
