@@ -21,12 +21,6 @@ public class UserController {
 
     // Metodi CRUD
 
-    @PostMapping("/new")
-    ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserResponseDTO userResponseDTO) {
-        UserResponseDTO createdUser = this.userService.createUser(userResponseDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
-    }
-
     @GetMapping("/{id}")
     ResponseEntity<UserResponseDTO> getUser(@PathVariable UUID id) {
         UserResponseDTO foundUser = this.userService.getUser(id);
