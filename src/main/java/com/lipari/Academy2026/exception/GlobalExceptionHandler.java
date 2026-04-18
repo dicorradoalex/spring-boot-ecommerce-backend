@@ -24,11 +24,11 @@ public class GlobalExceptionHandler {
     // Gestisce gli errori di validazione (es. @NotBlank, @Size, @Email falliti)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDTO> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        // Recuperiamo tutti i messaggi d'errore e li uniamo in una stringa
+        // Recuperiamo solo i messaggi d'errore definiti nel DTO e li uniamo
         String errorMessage = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .map(error -> error.getDefaultMessage())
                 .collect(Collectors.joining("; "));
 
         ErrorResponseDTO error = new ErrorResponseDTO(
@@ -38,7 +38,6 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
-
     // Intercetta specificatamente le ResourceNotFoundException
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleResourceNotFound(ResourceNotFoundException ex) {
