@@ -1,6 +1,7 @@
 package com.lipari.Academy2026.controller;
 
-import com.lipari.Academy2026.dto.CategoryDTO;
+import com.lipari.Academy2026.dto.CategoryRequestDTO;
+import com.lipari.Academy2026.dto.CategoryResponseDTO;
 import com.lipari.Academy2026.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -9,10 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
-
-/**
- * AREA ADMIN: Gestione delle categorie lato admin
- */
 
 @RestController
 @RequestMapping("/api/admin/category")
@@ -25,22 +22,25 @@ public class AdminCategoryController {
      * Crea una nuova categoria di prodotti.
      */
     @PostMapping("/new")
-    public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
-        CategoryDTO createdCategory = this.categoryService.createCategory(categoryDTO);
+    public ResponseEntity<CategoryResponseDTO> createCategory(@Valid @RequestBody CategoryRequestDTO categoryDTO) {
+        CategoryResponseDTO createdCategory = this.categoryService.createCategory(categoryDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCategory);
     }
 
     /**
-     * Aggiorna il nome o i dettagli di una categoria esistente.
+     * Aggiorna il nome di una categoria esistente.
      */
-    @PutMapping("/update")
-    public ResponseEntity<CategoryDTO> updateCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
-        CategoryDTO modifiedCategory = this.categoryService.updateCategory(categoryDTO);
+    @PutMapping("/{id}/update")
+    public ResponseEntity<CategoryResponseDTO> updateCategory(
+            @PathVariable UUID id,
+            @Valid @RequestBody CategoryRequestDTO categoryDTO) {
+        
+        CategoryResponseDTO modifiedCategory = this.categoryService.updateCategory(categoryDTO, id);
         return ResponseEntity.ok(modifiedCategory);
     }
 
     /**
-     * Elimina una categoria dal sistema.
+     * Elimina una categoria dal sistema tramite ID.
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable UUID id) {

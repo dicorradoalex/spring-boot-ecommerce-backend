@@ -1,19 +1,30 @@
 package com.lipari.Academy2026.mapper;
 
-import com.lipari.Academy2026.dto.CategoryDTO;
+import com.lipari.Academy2026.dto.CategoryRequestDTO;
+import com.lipari.Academy2026.dto.CategoryResponseDTO;
 import com.lipari.Academy2026.entity.CategoryEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring") // Permette a Spring di gestire il Mapper come un suo componente (Bean). Questo permette di poterlo utilizzare da altre parti senza fare new CategoryMapperImpl()
+@Mapper(componentModel = "spring")
 public interface CategoryMapper {
 
-    CategoryDTO toDto(CategoryEntity entity);
+    // Da Entity a Risposta (per il client)
+    CategoryResponseDTO toDto(CategoryEntity entity);
 
-    CategoryEntity toEntity(CategoryDTO dto);
+    // Da Richiesta a Entity (per creazione)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "productsList", ignore = true)
+    CategoryEntity toEntity(CategoryRequestDTO dto);
 
-    List<CategoryDTO> toDtoList(List<CategoryEntity> entityList);
+    // Lista di risposte
+    List<CategoryResponseDTO> toDtoList(List<CategoryEntity> entities);
 
-    List<CategoryEntity> toEntityList(List<CategoryDTO> dtoList);
+    // Aggiornamento entità da richiesta
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "productsList", ignore = true)
+    void updateEntityFromRequest(CategoryRequestDTO dto, @MappingTarget CategoryEntity entity);
 }

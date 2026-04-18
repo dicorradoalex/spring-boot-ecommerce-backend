@@ -9,12 +9,12 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 /**
- * Record per il trasferimento dei dati del Prodotto.
+ * DTO utilizzato per le richieste di creazione e aggiornamento prodotti.
+ * NOTA: Non contiene l'ID (generato dal server) e usa categoryId per semplicità.
  */
-public record ProductDTO(
-        UUID id,
+public record ProductRequestDTO(
 
-        @NotBlank(message = "Il nome è obbligatorio")
+        @NotBlank(message = "Il nome del prodotto è obbligatorio")
         String name,
 
         @NotNull(message = "Il prezzo è obbligatorio")
@@ -27,6 +27,6 @@ public record ProductDTO(
         @PositiveOrZero(message = "La quantità non può essere negativa")
         Integer stock,
 
-        @NotNull(message = "La categoria è obbligatoria")
-        CategoryDTO category) {
-}
+        @NotNull(message = "L'ID della categoria è obbligatorio")
+        UUID categoryId
+) {}
