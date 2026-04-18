@@ -1,20 +1,20 @@
 package com.lipari.Academy2026.service;
 
-import com.lipari.Academy2026.dto.CategoryDTO;
-import com.lipari.Academy2026.exception.ResourceNotFoundException;
+import com.lipari.Academy2026.dto.CategoryRequestDTO;
+import com.lipari.Academy2026.dto.CategoryResponseDTO;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface CategoryService {
 
-    public CategoryDTO createCategory(CategoryDTO CategoryDTO);
+    CategoryResponseDTO getCategory(UUID id);
 
-    public CategoryDTO getCategory(UUID id);
+    CategoryResponseDTO createCategory(CategoryRequestDTO categoryRequestDTO);
 
-    public void deleteCategory(UUID id);
+    void deleteCategory(UUID id);
 
-    public CategoryDTO updateCategory(CategoryDTO CategoryDTO);
+    CategoryResponseDTO updateCategory(CategoryRequestDTO categoryRequestDTO, UUID id);
 
-    public List<CategoryDTO> getAllCategories();
+    List<CategoryResponseDTO> getAllCategories();
 }

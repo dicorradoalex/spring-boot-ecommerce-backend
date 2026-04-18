@@ -1,20 +1,20 @@
 package com.lipari.Academy2026.service;
 
-import com.lipari.Academy2026.dto.ProductDTO;
-
+import com.lipari.Academy2026.dto.ProductRequestDTO;
+import com.lipari.Academy2026.dto.ProductResponseDTO;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface ProductService {
 
-    public ProductDTO createProduct(ProductDTO productDTO);
+    ProductResponseDTO getProduct(UUID id);
 
-    public ProductDTO getProduct(UUID id);
+    ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO);
 
-    public void deleteProduct(UUID id);
+    void deleteProduct(UUID id);
 
-    public ProductDTO updateProduct(ProductDTO productDTO);
+    ProductResponseDTO updateProduct(ProductRequestDTO productRequestDTO, UUID id);
 
-    public List<ProductDTO> getAllProducts();
+    List<ProductResponseDTO> getAllProducts();
 }
