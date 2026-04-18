@@ -2,17 +2,14 @@ package com.lipari.Academy2026.controller;
 
 import com.lipari.Academy2026.dto.OrderRequestDTO;
 import com.lipari.Academy2026.dto.OrderResponseDTO;
-import com.lipari.Academy2026.entity.UserEntity;
 import com.lipari.Academy2026.enums.OrderStatus;
 import com.lipari.Academy2026.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
