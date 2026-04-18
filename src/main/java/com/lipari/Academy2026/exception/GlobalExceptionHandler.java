@@ -3,6 +3,7 @@ package com.lipari.Academy2026.exception;
 import com.lipari.Academy2026.dto.ErrorResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -20,6 +21,17 @@ import java.util.stream.Collectors;
 // @RestControllerAdvice permette di monitorare tutti i @RestController
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    // Gestisce il fallimento del login (email o password errate)
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponseDTO> handleBadCredentials(BadCredentialsException ex) {
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                HttpStatus.UNAUTHORIZED.value(),
+                "Credenziali non valide: email o password errate.",
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
 
     // Gestisce gli errori di validazione (es. @NotBlank, @Size, @Email falliti)
     @ExceptionHandler(MethodArgumentNotValidException.class)
