@@ -30,3 +30,18 @@ databaseChangeLog:
               - column:
                   name: description
                   type: TEXT
+
+# Ahhiunto campo stock per la disponibilità di un articolo
+  - changeSet:
+      id: 20260418174743
+      author: dicorradoalex
+      changes:
+        - addColumn:
+            tableName: product
+            columns:
+              - column:
+                  name: stock
+                  type: INT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false

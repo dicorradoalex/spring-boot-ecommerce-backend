@@ -22,11 +22,22 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    // Gestisce il fallimento dell'ordine per mancanza di stock
+    @ExceptionHandler(OutOfStockException.class)
+    public ResponseEntity<ErrorResponseDTO> handleOutOfStock(OutOfStockException ex) {
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                HttpStatus.BAD_REQUEST.value(), // Estrai il codice dell'errore (400)
+                ex.getMessage(), // Estrai il messaggio scritto nel Service
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
     // Gestisce il fallimento del login (email o password errate)
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponseDTO> handleBadCredentials(BadCredentialsException ex) {
         ErrorResponseDTO error = new ErrorResponseDTO(
-                HttpStatus.UNAUTHORIZED.value(),
+                HttpStatus.UNAUTHORIZED.value(), // Estrai il codice dell'errore (401)
                 "Credenziali non valide: email o password errate.",
                 LocalDateTime.now()
         );
@@ -50,7 +61,8 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
-    // Intercetta specificatamente le ResourceNotFoundException
+
+    // Intercetta le ResourceNotFoundException
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleResourceNotFound(ResourceNotFoundException ex) {
         ErrorResponseDTO error = new ErrorResponseDTO(

@@ -9,6 +9,7 @@ import com.lipari.Academy2026.entity.ProductEntity;
 import com.lipari.Academy2026.entity.UserEntity;
 import com.lipari.Academy2026.enums.OrderStatus;
 import com.lipari.Academy2026.exception.InvalidOrderStateException;
+import com.lipari.Academy2026.exception.OutOfStockException;
 import com.lipari.Academy2026.exception.ResourceNotFoundException;
 import com.lipari.Academy2026.mapper.OrderMapper;
 import com.lipari.Academy2026.repository.OrderRepository;
@@ -43,45 +44,60 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponseDTO createOrder(OrderRequestDTO orderRequestDto) {
 
         // Recupero utente loggato
-        // Invece di prenderlo dal DTO, lo estraiamo dal Token JWT
         UserEntity currentUser = (UserEntity) SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal();
 
         // Inizializza l'ordine
         OrderEntity newOrder = OrderEntity.builder()
-                .user(currentUser) // associa all'utente autenticato
+                .user(currentUser) // associa all'utente loggato
                 .status(OrderStatus.CREATED)
                 .orderTime(LocalDateTime.now())
                 .total(BigDecimal.ZERO)
                 .entries(new ArrayList<>())
                 .build();
 
-        // Crea le Entry "richieste"
-        for (OrderEntryRequestDTO entry : orderRequestDto.entries()) {
-            // Estraggo il product "richiesto" dal db
-            Optional<ProductEntity> product = this.productRepository.findById(entry.productId());
-            if (!product.isPresent())
-                throw new ResourceNotFoundException("Prodotto con ID: " + entry.productId() + " non trovato");
+        // Elaborazione delle righe dell'ordine (Entries)
+        for (OrderEntryRequestDTO entryDto : orderRequestDto.entries()) {
 
-            // Crea una nuova entry prendendo i dati dal dto
+            // Recupero prodotto dal database
+            Optional<ProductEntity> productOpt = this.productRepository.findById(entryDto.productId());
+
+            // Controllo esistenza
+            if (!productOpt.isPresent())
+                throw new ResourceNotFoundException("Prodotto con ID: " + entryDto.productId() + " non trovato");
+
+
+            ProductEntity product = productOpt.get();
+
+            // Controllo disponibilità in magazzino
+            if (product.getStock() < entryDto.quantity())
+                throw new OutOfStockException("Disponibilità insufficiente per il prodotto: " + product.getName() +
+                        " (Richiesti: " + entryDto.quantity() + ", Disponibili: " + product.getStock() + ")");
+
+
+            // Aggiornamento Scorte:
+            // Sottraggo la quantità ordinata dallo stock attuale
+            product.setStock(product.getStock() - entryDto.quantity());
+            this.productRepository.save(product);
+
+            // Creazione entry "richiesta"
             OrderEntryEntity newOrderEntry = OrderEntryEntity.builder()
-                    .product(product.get())
-                    .quantity(entry.quantity())
-                    .price(product.get().getPrice())
-                    .total(product.get().getPrice().multiply(BigDecimal.valueOf(entry.quantity())))
+                    .product(product)
+                    .quantity(entryDto.quantity())
+                    .price(product.getPrice()) // Salva il prezzo attuale al momento dell'acquisto
+                    .total(product.getPrice().multiply(BigDecimal.valueOf(entryDto.quantity())))
                     .build();
 
+            // Aggiorno il totale dell'ordine e aggiungiamo la entry all'ordine
             newOrder.setTotal(newOrder.getTotal().add(newOrderEntry.getTotal()));
-
-            // L'aggiungo alla lista del nuovo ordine
             newOrder.addEntry(newOrderEntry);
         }
 
-        // Salvo
+        // Salvo e restituisco
         this.orderRepository.save(newOrder);
-        OrderResponseDTO orderCreated = this.orderMapper.toDto(newOrder);
-        return orderCreated;
+        return this.orderMapper.toDto(newOrder);
     }
+
 
     @Override
     @Transactional
