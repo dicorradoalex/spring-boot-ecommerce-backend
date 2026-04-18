@@ -31,6 +31,9 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
+
+    // USER AREA
+
     @Override
     public UserResponseDTO getCurrentUser() {
         // Recupero l'utente autenticato dal contesto di sicurezza
@@ -67,24 +70,6 @@ public class UserServiceImpl implements UserService {
         return this.userMapper.toDto(user);
     }
 
-    // Rivedere successivamente, può essere utile per admin
-    @Override
-    public UserResponseDTO getUser(UUID id) {
-        Optional<UserEntity> userOptional = this.userRepository.findById(id);
-        if(userOptional.isPresent())
-            return this.userMapper.toDto(userOptional.get());
-        else
-            throw new ResourceNotFoundException("Utente con ID: " + id + " non trovato.");
-    }
-
-    @Override
-    @Transactional
-    public void deleteUser(UUID id) {
-        Optional<UserEntity> userOptional = this.userRepository.findById(id);
-        if(userOptional.isPresent())
-            this.userRepository.deleteById(id);
-        else throw new ResourceNotFoundException("Utente con ID: " + id + " non trovato.");
-    }
 
     @Override
     @Transactional
@@ -107,6 +92,29 @@ public class UserServiceImpl implements UserService {
         UserEntity savedUser = this.userRepository.save(userToUpdate);
         // Converto in DTO di risposta e restituisco
         return this.userMapper.toDto(savedUser);
+    }
+
+
+
+
+    // ADMIN AREA
+
+    @Override
+    public UserResponseDTO getUser(UUID id) {
+        Optional<UserEntity> userOptional = this.userRepository.findById(id);
+        if(userOptional.isPresent())
+            return this.userMapper.toDto(userOptional.get());
+        else
+            throw new ResourceNotFoundException("Utente con ID: " + id + " non trovato.");
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(UUID id) {
+        Optional<UserEntity> userOptional = this.userRepository.findById(id);
+        if(userOptional.isPresent())
+            this.userRepository.deleteById(id);
+        else throw new ResourceNotFoundException("Utente con ID: " + id + " non trovato.");
     }
 
     @Override
