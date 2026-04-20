@@ -1,0 +1,27 @@
+databaseChangeLog:
+
+#crea tabella per CartEntity
+  - changeSet:
+      id: 20260419103607
+      author: dicorradoalex
+      changes:
+        - createTable:
+            tableName: carts
+            columns:
+              - column:
+                  name: id
+                  type: BINARY(16)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BINARY(16)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    foreignKeyName: fk_cart_user
+                    referencedTableName: users
+                    referencedColumnNames: id
+
+
