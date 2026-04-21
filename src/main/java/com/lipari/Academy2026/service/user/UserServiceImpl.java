@@ -11,8 +11,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Implementazione del servizio per la gestione dei profili utente.
@@ -93,9 +95,9 @@ public class UserServiceImpl implements UserService {
      * Restituisce l'elenco completo di tutti gli utenti registrati nella piattaforma.
      */
     @Override
-    public List<UserResponseDTO> getAllUsers() {
+    public Page<UserResponseDTO> getAllUsers(Pageable pageable) {
 
-        List<UserEntity> usersList = this.userRepository.findAll();
-        return this.userMapper.toDtoList(usersList);
+        Page<UserEntity> usersPage = this.userRepository.findAll(pageable);
+        return usersPage.map(this.userMapper::toDto);
     }
 }

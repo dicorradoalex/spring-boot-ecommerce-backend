@@ -13,6 +13,8 @@ import com.lipari.Academy2026.repository.CartRepository;
 import com.lipari.Academy2026.repository.OrderRepository;
 import com.lipari.Academy2026.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +23,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -156,12 +157,12 @@ public class OrderServiceImpl implements OrderService {
      * Recupera lo storico di tutti gli ordini effettuati dall'utente autenticato.
      */
     @Override
-    public List<OrderResponseDTO> getMyOrders() {
+    public Page<OrderResponseDTO> getMyOrders(Pageable pageable) {
 
         UserEntity currentUser = getCurrentUser();
-        List<OrderEntity> ordersList = this.orderRepository.findByUser_Id(currentUser.getId());
+        Page<OrderEntity> ordersPage = this.orderRepository.findByUser_Id(currentUser.getId(), pageable);
         
-        return this.orderMapper.toDtoList(ordersList);
+        return ordersPage.map(this.orderMapper::toDto);
     }
 
     /**
