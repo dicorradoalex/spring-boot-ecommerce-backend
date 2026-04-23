@@ -2,6 +2,8 @@ package com.lipari.Academy2026.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +20,8 @@ import java.util.UUID;
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString
+@SQLDelete(sql = "UPDATE category SET deleted = true WHERE id=?")
+@SQLRestriction("deleted = false")
 public class CategoryEntity {
 
     @Id
@@ -33,6 +37,9 @@ public class CategoryEntity {
     @OneToMany(mappedBy = "category")
     @ToString.Exclude
     private List<ProductEntity> productsList;
+
+    @Column(nullable = false)
+    private boolean deleted = false;
 }
 
 /*
