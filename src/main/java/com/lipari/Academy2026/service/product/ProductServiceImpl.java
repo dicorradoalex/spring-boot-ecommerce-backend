@@ -2,9 +2,11 @@ package com.lipari.Academy2026.service.product;
 
 import com.lipari.Academy2026.dto.product.ProductRequestDTO;
 import com.lipari.Academy2026.dto.product.ProductResponseDTO;
+import com.lipari.Academy2026.entity.CategoryEntity;
 import com.lipari.Academy2026.entity.ProductEntity;
 import com.lipari.Academy2026.exception.ResourceNotFoundException;
 import com.lipari.Academy2026.mapper.ProductMapper;
+import com.lipari.Academy2026.repository.CategoryRepository;
 import com.lipari.Academy2026.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,6 +31,7 @@ public class ProductServiceImpl implements ProductService {
 
     // DIPENDENZE
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
 
     /**
@@ -115,6 +118,11 @@ public class ProductServiceImpl implements ProductService {
         // Converto il DTO in Entità
         ProductEntity product = this.productMapper.toEntity(requestDTO);
 
+        // Recupero la categoria e la associo al prodotto
+        CategoryEntity category = this.categoryRepository.findById(requestDTO.categoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria con ID: " + requestDTO.categoryId() + " non trovata"));
+        product.setCategory(category);
+
         // Salvo il prodotto e restituisco il DTO di risposta
         ProductEntity savedProduct = this.productRepository.save(product);
         return this.productMapper.toDto(savedProduct);
@@ -154,6 +162,13 @@ public class ProductServiceImpl implements ProductService {
 
         // Aggiorno i campi dell'entità tramite il mapper
         this.productMapper.updateEntityFromRequest(requestDTO, productToUpdate);
+
+        // Aggiorno la categoria se necessario
+        if (!productToUpdate.getCategory().getId().equals(requestDTO.categoryId())) {
+            CategoryEntity newCategory = this.categoryRepository.findById(requestDTO.categoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Categoria con ID: " + requestDTO.categoryId() + " non trovata"));
+            productToUpdate.setCategory(newCategory);
+        }
 
         // Salvo e restituisco il DTO aggiornato
         ProductEntity savedProduct = this.productRepository.save(productToUpdate);
