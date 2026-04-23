@@ -19,6 +19,12 @@ public interface OrderService {
     OrderResponseDTO updateOrderStatus(UUID orderId, OrderStatus newStatus);
     OrderResponseDTO cancelOrder(UUID orderId);
     Page<OrderResponseDTO> getMyOrders(Pageable pageable);
+    Page<OrderResponseDTO> getAllOrders(Pageable pageable);
+
+    /**
+     * Recupera l'URL di pagamento di Stripe per un ordine esistente.
+     */
+    String getPaymentUrl(UUID orderId);
 
     /**
      * Gestisce la conferma del pagamento da parte di Stripe.

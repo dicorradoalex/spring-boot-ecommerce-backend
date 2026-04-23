@@ -94,7 +94,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/category/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/category/**").hasRole("ADMIN")
 
-                        // Ordini: Gestione stato riservata agli ADMIN
+                        // Ordini: Visualizzazione lista e gestione stato riservata agli ADMIN
+                        .requestMatchers(HttpMethod.GET, "/api/order/admin").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/order/*/retry-payment").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/api/order/*/status").hasRole("ADMIN")
 
                         // Utenti: Gestione lista e cancellazione riservata agli ADMIN
