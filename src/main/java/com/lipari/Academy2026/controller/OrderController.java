@@ -83,6 +83,17 @@ public class OrderController {
     // AREA ADMIN
 
     /**
+     * Recupera la lista di tutti gli ordini presenti nel sistema (Riservato ADMIN).
+     */
+    @GetMapping("/admin")
+    public ResponseEntity<Page<OrderResponseDTO>> getAllOrders(
+            @PageableDefault(page = 0, size = 10, sort = "orderTime") Pageable pageable) {
+
+        Page<OrderResponseDTO> allOrders = this.orderService.getAllOrders(pageable);
+        return ResponseEntity.ok(allOrders);
+    }
+
+    /**
      * Aggiorna lo stato di un ordine specifico.
      */
     @PatchMapping("/{id}/status")

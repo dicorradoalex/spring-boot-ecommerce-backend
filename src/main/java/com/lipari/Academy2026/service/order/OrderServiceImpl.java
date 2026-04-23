@@ -206,6 +206,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
+     * Recupera la lista di tutti gli ordini presenti nel sistema (Riservato ADMIN).
+     */
+    @Override
+    public Page<OrderResponseDTO> getAllOrders(Pageable pageable) {
+        return this.orderRepository.findAll(pageable)
+                .map(this.orderMapper::toDto);
+    }
+
+    /**
      * Annulla un ordine e imposta lo stato a CANCELED.
      * Consente l'operazione solo se l'ordine appartiene all'utente e non è ancora stato spedito.
      */
